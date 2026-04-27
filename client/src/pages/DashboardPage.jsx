@@ -11,8 +11,8 @@ import { BATCH_STATUS, calcFarmerShare, formatCurrency, formatDate, getCropEmoji
 
 const navItems = [
   { key: 'overview', label: 'Overview' },
-  { key: 'batches', label: 'Batches' },
-  { key: 'trace', label: 'Trace' },
+  { key: 'batches', label: 'Harvest Logs' },
+  { key: 'trace', label: 'Farm-to-Fork Audit' },
   { key: 'settings', label: 'Settings' },
 ];
 
@@ -102,17 +102,17 @@ export default function DashboardPage() {
   };
 
   const title = {
-    farmer: 'Farmer dashboard',
-    aggregator: 'Aggregator dashboard',
-    retailer: 'Retailer dashboard',
-    consumer: 'Consumer dashboard',
-  }[user.role] || 'Dashboard';
+    farmer: 'The Farmer Node',
+    aggregator: 'Mandi Oracle Node',
+    retailer: 'Consumer Delivery Node',
+    consumer: 'Govt Node',
+  }[user.role] || 'Govt Node';
 
   const subtitle = {
-    farmer: 'Harvest and provenance',
-    aggregator: 'Purchase and logistics',
-    retailer: 'Sell to consumers',
-    consumer: 'Trace and verify',
+    farmer: 'Log harvest and provenance records',
+    aggregator: 'Oracle-led mandi purchase and logistics',
+    retailer: 'Delivery updates to consumers',
+    consumer: 'Audit and verify supply chain claims',
   }[user.role] || 'Operations';
 
   return (
@@ -123,7 +123,7 @@ export default function DashboardPage() {
             <div className="brand-mark">A</div>
             <div className="brand-copy">
               <strong>AgriChain ZK</strong>
-              <span className="muted">{user.role} mode</span>
+              <span className="muted">{title}</span>
             </div>
           </div>
           <div className="nav-list">
@@ -134,14 +134,14 @@ export default function DashboardPage() {
               </button>
             ))}
           </div>
-          <button className="button-secondary" type="button" onClick={() => navigate('/trace')}>Open trace page</button>
+          <button className="button-secondary" type="button" onClick={() => navigate('/trace')}>Open audit page</button>
         </aside>
 
         <main className="shell-main">
-          <NavBar title={title} subtitle={subtitle} actions={user.role === 'consumer' ? <button className="button-secondary" type="button" onClick={() => setActiveView('trace')}>Trace a batch</button> : null} />
+          <NavBar title={title} subtitle={subtitle} actions={user.role === 'consumer' ? <button className="button-secondary" type="button" onClick={() => setActiveView('trace')}>Run audit trace</button> : null} />
 
           <div className="grid-4">
-            <div className="metric-card animate-in"><div className="kpi"><strong>{metrics.own}</strong><span>My batches</span></div></div>
+            <div className="metric-card animate-in"><div className="kpi"><strong>{metrics.own}</strong><span>My harvest logs</span></div></div>
             <div className="metric-card animate-in"><div className="kpi"><strong>{metrics.harvested}</strong><span>Harvested</span></div></div>
             <div className="metric-card animate-in"><div className="kpi"><strong>{metrics.sold}</strong><span>Sold</span></div></div>
             <div className="metric-card animate-in"><div className="kpi"><strong>{chainStats?.totalBlocks || 0}</strong><span>Chain blocks</span></div></div>
@@ -174,7 +174,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="button-row">
                         <button className="button-secondary" type="button" onClick={() => setSelectedBatch(batch)}>Inspect</button>
-                        {user.role === 'aggregator' && batch.status === 'HARVESTED' && <button className="button" type="button" disabled={loadingAction} onClick={() => handleBuy(batch)}>Buy batch</button>}
+                        {user.role === 'aggregator' && batch.status === 'HARVESTED' && <button className="button" type="button" disabled={loadingAction} onClick={() => handleBuy(batch)}>Acquire log</button>}
                         {user.role === 'retailer' && batch.status === 'AT_RETAILER' && <button className="button" type="button" disabled={loadingAction} onClick={() => handleSell(batch)}>Sell batch</button>}
                       </div>
                     </article>
@@ -226,7 +226,7 @@ export default function DashboardPage() {
             <section className="dashboard-section animate-in">
               <div className="section-head">
                 <div>
-                  <h2 className="section-title">Batch inventory</h2>
+                  <h2 className="section-title">Harvest log inventory</h2>
                   <p className="muted">Full list scoped to your role.</p>
                 </div>
               </div>

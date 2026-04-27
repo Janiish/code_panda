@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react';
 import { createBatch } from '../services/api';
-import { CROPS, QUALITY_GRADES } from '../utils/helpers';
+import { CROPS } from '../utils/helpers';
 
 const emptyForm = {
-  crop: CROPS[0],
+  cropType: CROPS[0],
   variety: '',
-  quantity: 100,
-  quality: QUALITY_GRADES[1],
+  quantityInQuintals: 0,
+  moistureLevel: '',
+  farmerAadhaarId: '',
+  landCoordinates: { lat: '', lng: '' },
   farmerPrice: 0,
   location: '',
   certifications: '',
@@ -15,28 +17,65 @@ const emptyForm = {
 export default function CreateBatch({ onCreated, onNotify }) {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [syncingOracle, setSyncingOracle] = useState(false);
 
   const parsedCertifications = useMemo(
     () => form.certifications.split(',').map((item) => item.trim()).filter(Boolean),
     [form.certifications],
   );
 
+  const syncOracleData = async () => {
+    setSyncingOracle(true);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const moisture = (12 + Math.random() * 2).toFixed(1);
+    const quantityInQuintals = (8 + Math.random() * 6).toFixed(2);
+    const lat = (19.2 + Math.random() * 1.5).toFixed(6);
+    const lng = (84.2 + Math.random() * 2.1).toFixed(6);
+    const aadhaarSuffix = Math.floor(1000 + Math.random() * 9000);
+
+    setForm((prev) => ({
+      ...prev,
+      moistureLevel: moisture,
+      quantityInQuintals,
+      farmerAadhaarId: `XXXX-XXXX-${aadhaarSuffix}`,
+      landCoordinates: { lat, lng },
+    }));
+
+    setSyncingOracle(false);
+    onNotify?.('AI assessment complete. IoT + oracle feed synced.');
+  };
+
   const submit = async (event) => {
     event.preventDefault();
+    if (!form.moistureLevel || !form.quantityInQuintals) {
+      onNotify?.('Run AI Assessment & IoT Sync before submitting harvest data.', 'error');
+      return;
+    }
+
     setSaving(true);
     try {
       const payload = {
-        ...form,
-        quantity: Number(form.quantity),
+        cropType: form.cropType,
+        quantityInQuintals: Number(form.quantityInQuintals),
+        moistureLevel: Number(form.moistureLevel),
+        farmerAadhaarId: form.farmerAadhaarId,
+        landCoordinates: {
+          lat: Number(form.landCoordinates.lat),
+          lng: Number(form.landCoordinates.lng),
+          source: 'EOSDA Satellite API (Mock)',
+        },
         farmerPrice: Number(form.farmerPrice),
+        variety: form.variety,
+        location: form.location,
         certifications: parsedCertifications,
       };
       const { data } = await createBatch(payload);
       setForm(emptyForm);
       onCreated?.(data);
-      onNotify?.('Batch created and written to the chain.');
+      onNotify?.('Harvest log submitted to Farmer Node and anchored on-chain.');
     } catch (error) {
-      onNotify?.(error.response?.data?.error || 'Unable to create batch', 'error');
+      onNotify?.(error.response?.data?.error || 'Unable to log harvest data', 'error');
     } finally {
       setSaving(false);
     }
@@ -46,15 +85,28 @@ export default function CreateBatch({ onCreated, onNotify }) {
     <form className="feature-card stack animate-in" onSubmit={submit}>
       <div className="feature-head">
         <div>
-          <h3 className="feature-title">Create Batch</h3>
-          <p className="muted">Record a harvest and push the first block.</p>
+          <h3 className="feature-title">Log Harvest Data</h3>
+          <p className="muted">Farmer Node intake with Mandi Oracle verification.</p>
         </div>
-        <span className="pill green">Farmer action</span>
+        <span className="pill green">Smallholder Farmer</span>
       </div>
+
+      <div className="surface" style={{ padding: 14 }}>
+        <div className="button-row" style={{ justifyContent: 'space-between', gap: 12 }}>
+          <strong>Mandi Oracle Controls</strong>
+          <button className="button-secondary" type="button" onClick={syncOracleData} disabled={syncingOracle || saving}>
+            {syncingOracle ? 'Running AI Scan...' : 'Run AI Assessment & IoT Sync'}
+          </button>
+        </div>
+        <p className="muted" style={{ marginTop: 8 }}>
+          Bypassing manual data entry to prevent Katni-Chhatni fraud.
+        </p>
+      </div>
+
       <div className="field-grid">
         <label>
-          Crop
-          <select className="select" value={form.crop} onChange={(e) => setForm({ ...form, crop: e.target.value })}>
+          Crop Type
+          <select className="select" value={form.cropType} onChange={(e) => setForm({ ...form, cropType: e.target.value })}>
             {CROPS.map((crop) => <option key={crop}>{crop}</option>)}
           </select>
         </label>
@@ -63,14 +115,20 @@ export default function CreateBatch({ onCreated, onNotify }) {
           <input className="input" value={form.variety} onChange={(e) => setForm({ ...form, variety: e.target.value })} placeholder="Basmati" />
         </label>
         <label>
-          Quantity (kg)
-          <input className="input" type="number" min="1" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
+          Quantity (Quintals) via IoT
+          <input className="input" type="number" min="0" step="0.01" value={form.quantityInQuintals} readOnly placeholder="Run AI/IoT sync" />
         </label>
         <label>
-          Quality
-          <select className="select" value={form.quality} onChange={(e) => setForm({ ...form, quality: e.target.value })}>
-            {QUALITY_GRADES.map((grade) => <option key={grade}>{grade}</option>)}
-          </select>
+          Moisture Level (%) via AI
+          <input className="input" type="number" value={form.moistureLevel} readOnly placeholder="Run AI/IoT sync" />
+        </label>
+        <label>
+          Farmer Aadhaar (Mock)
+          <input className="input" value={form.farmerAadhaarId} readOnly placeholder="Auto-fetched from Krushak Odisha API" />
+        </label>
+        <label>
+          Land Coordinates (Mock)
+          <input className="input" value={form.landCoordinates.lat && form.landCoordinates.lng ? `${form.landCoordinates.lat}, ${form.landCoordinates.lng}` : ''} readOnly placeholder="Auto-fetched from EOSDA API" />
         </label>
         <label>
           Farmer price
@@ -86,7 +144,7 @@ export default function CreateBatch({ onCreated, onNotify }) {
         <textarea className="textarea" value={form.certifications} onChange={(e) => setForm({ ...form, certifications: e.target.value })} placeholder="Organic, Residue-Free" />
       </label>
       <div className="button-row">
-        <button className="button" type="submit" disabled={saving}>{saving ? 'Saving...' : 'Create batch'}</button>
+        <button className="button" type="submit" disabled={saving || syncingOracle}>{saving ? 'Saving...' : 'Submit Harvest Log'}</button>
         <button className="button-secondary" type="button" onClick={() => setForm(emptyForm)}>Reset</button>
       </div>
     </form>

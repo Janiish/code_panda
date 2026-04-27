@@ -79,21 +79,66 @@ router.get('/:batchId', async (req, res) => {
 // POST /api/batches — create batch (farmer)
 router.post('/', auth, async (req, res) => {
   try {
-    const { crop, variety, quantity, quality, farmerPrice, location, certifications } = req.body;
+    const {
+      crop,
+      cropType,
+      variety,
+      quantity,
+      quantityInQuintals,
+      moistureLevel,
+      quality,
+      farmerPrice,
+      location,
+      certifications,
+      farmerAadhaarId,
+      farmerAadhaarMock,
+      landCoordinates,
+    } = req.body;
+
+    const selectedCrop = cropType || crop;
+    const normalizedQuantityInQuintals = Number(quantityInQuintals || 0);
+    const normalizedQuantityKg = Number(quantity || normalizedQuantityInQuintals * 100);
+    const normalizedMoisture = moistureLevel === undefined || moistureLevel === null
+      ? null
+      : Number(moistureLevel);
+
+    const derivedQuality = normalizedMoisture === null
+      ? (quality || 'A')
+      : (normalizedMoisture <= 12 ? 'A+' : normalizedMoisture <= 14 ? 'A' : 'B+');
+
     const count = await Batch.countDocuments();
     const batchId = 'BATCH-' + String(count + 1).padStart(3, '0');
     const farmer = await User.findById(req.user.id);
 
     const batch = await Batch.create({
-      batchId, crop, variety: variety || '', quantity, quality,
+      batchId,
+      crop: selectedCrop,
+      cropType: selectedCrop,
+      variety: variety || '',
+      quantity: normalizedQuantityKg,
+      quantityInQuintals: normalizedQuantityInQuintals || Number((normalizedQuantityKg / 100).toFixed(2)),
+      moistureLevel: normalizedMoisture,
+      quality: derivedQuality,
+      farmerAadhaarId: farmerAadhaarId || farmerAadhaarMock || '',
+      farmerAadhaarMock: farmerAadhaarMock || farmerAadhaarId || '',
+      landCoordinates: landCoordinates || { lat: null, lng: null, source: 'EOSDA Satellite API (Mock)' },
       farmerId: req.user.id, farmerPrice,
       location: location || farmer.location, certifications: certifications || [],
       harvestDate: new Date()
     });
 
     await Block.addBlock({
-      type: 'CREATE_BATCH', batchId, crop, quantity, quality,
-      actor: req.user.name, role: 'Farmer', location: batch.location, price: farmerPrice
+      type: 'CREATE_HARVEST_LOG',
+      batchId,
+      cropType: selectedCrop,
+      quantityInQuintals: batch.quantityInQuintals,
+      moistureLevel: batch.moistureLevel,
+      actor: req.user.name,
+      role: 'Smallholder Farmer',
+      location: batch.location,
+      price: farmerPrice,
+      farmerAadhaarVerifiedBy: 'Krushak Odisha API (Mock)',
+      coordinatesVerifiedBy: 'EOSDA Satellite API (Mock)',
     });
 
     const populated = await Batch.findById(batch._id)

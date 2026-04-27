@@ -12,13 +12,13 @@ const blockSchema = new mongoose.Schema({
 
 blockSchema.statics.calcHash = function (index, prevHash, timestamp, data, nonce = 0) {
   const str = `${index}${prevHash}${timestamp}${JSON.stringify(data)}${nonce}`;
-  return crypto.createHash('sha256').update(str).digest('hex');
+  return '0x' + crypto.createHash('sha256').update(str).digest('hex');
 };
 
 blockSchema.statics.addBlock = async function (data) {
   const lastBlock = await this.findOne().sort({ index: -1 });
   const index = lastBlock ? lastBlock.index + 1 : 0;
-  const previousHash = lastBlock ? lastBlock.hash : '0'.repeat(64);
+  const previousHash = lastBlock ? lastBlock.hash : '0x' + '0'.repeat(64);
   const timestamp = new Date().toISOString();
   const hash = this.calcHash(index, previousHash, timestamp, data);
   return this.create({ index, timestamp, data, previousHash, hash });

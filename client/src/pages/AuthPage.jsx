@@ -4,10 +4,10 @@ import { sendOTP, verifyOTP } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 const roleOptions = [
-  { value: 'farmer', label: 'Farmer' },
-  { value: 'aggregator', label: 'Aggregator' },
-  { value: 'retailer', label: 'Retailer' },
-  { value: 'consumer', label: 'Consumer' },
+  { value: 'farmer', label: 'Smallholder Farmer' },
+  { value: 'aggregator', label: 'Mandi Oracle / Official' },
+  { value: 'retailer', label: 'Consumer' },
+  { value: 'consumer', label: 'Govt Auditor' },
 ];
 
 export default function AuthPage() {

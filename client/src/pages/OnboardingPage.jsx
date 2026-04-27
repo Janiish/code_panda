@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 
 const cards = [
-  { title: 'Farmer', text: 'Create harvest batches and publish the first block.', tone: 'green' },
-  { title: 'Aggregator', text: 'Purchase available produce, ship to retailers, and keep the chain honest.', tone: 'cyan' },
-  { title: 'Consumer', text: 'Search a batch ID and see every transaction in one timeline.', tone: 'amber' },
+  { title: 'Smallholder Farmer', text: 'Log harvest data into The Farmer Node and publish the first audited block.', tone: 'green' },
+  { title: 'Mandi Oracle / Official', text: 'Acquire harvest logs, verify oracle events, and push provenance updates.', tone: 'cyan' },
+  { title: 'Consumer + Govt Auditor', text: 'Run a Farm-to-Fork Audit Timeline and inspect every ledger event.', tone: 'amber' },
 ];
 
 export default function OnboardingPage() {
@@ -15,7 +15,7 @@ export default function OnboardingPage() {
         <div className="section-head">
           <div>
             <div className="eyebrow">How it works</div>
-            <h2 className="section-title" style={{ marginTop: 10 }}>A simple path across the supply chain</h2>
+            <h2 className="section-title" style={{ marginTop: 10 }}>A resilient path across the agri supply chain</h2>
           </div>
           <button className="button-secondary" type="button" onClick={() => navigate('/auth')}>Continue to login</button>
         </div>

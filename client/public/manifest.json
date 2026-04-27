@@ -1,0 +1,17 @@
+{
+  "name": "AgriChain ZK",
+  "short_name": "AgriChain",
+  "description": "Farm-to-fork provenance and audit prototype for SIH 2025",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#14532d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
