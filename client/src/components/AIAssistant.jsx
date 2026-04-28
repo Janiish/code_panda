@@ -90,7 +90,7 @@ export default function AIAssistant() {
     pointerEvents: isSettled ? 'auto' : 'none',
   };
 
-  const bubbleStyle = (role) => ({
+  const bubbleStyle = (role, delayMs = 0) => ({
     alignSelf: role === 'user' ? 'flex-end' : 'flex-start',
     background: role === 'user' ? 'linear-gradient(135deg, #1d4ed8, #2563eb)' : 'rgba(238, 242, 246, 0.96)',
     color: role === 'user' ? '#fff' : '#12212b',
@@ -103,7 +103,7 @@ export default function AIAssistant() {
     wordBreak: 'break-word',
     boxShadow: role === 'user' ? '0 10px 20px rgba(37, 99, 235, 0.16)' : '0 8px 16px rgba(15, 23, 42, 0.06)',
     transform: 'translateY(0)',
-    animation: isSettled ? 'assistant-message-in 300ms cubic-bezier(0.22, 1, 0.36, 1) both' : 'none',
+    animation: isSettled ? `assistant-message-in 300ms cubic-bezier(0.22, 1, 0.36, 1) ${delayMs}ms both` : 'none',
   });
 
   return (
@@ -192,8 +192,7 @@ export default function AIAssistant() {
                       fontSize: 12,
                       cursor: 'pointer',
                       boxShadow: '0 8px 16px rgba(15, 23, 42, 0.05)',
-                      animation: isSettled ? 'assistant-chip-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both' : 'none',
-                      animationDelay: `${80 + index * 70}ms`,
+                      animation: isSettled ? `assistant-chip-in 260ms cubic-bezier(0.22, 1, 0.36, 1) ${80 + index * 70}ms both` : 'none',
                     }}
                   >
                     {prompt}
@@ -203,7 +202,7 @@ export default function AIAssistant() {
             </div>
 
             {messages.map((message, index) => (
-              <div key={`${message.role}-${index}`} style={{ ...bubbleStyle(message.role), animationDelay: `${120 + index * 70}ms` }}>
+              <div key={`${message.role}-${index}`} style={bubbleStyle(message.role, 120 + index * 70)}>
                 <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', opacity: 0.7, marginBottom: 3 }}>
                   {message.role === 'user' ? 'You' : 'Krishi-Mitra'}
                 </div>

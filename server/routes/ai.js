@@ -35,12 +35,15 @@ router.post('/chat', async (req, res) => {
     }
 
     if (!apiKey) {
-      return res.status(503).json({ error: 'Krishi-Mitra is not configured yet. Set GEMINI_API_KEY on the server.' });
+      return res.json({
+        text: buildFallbackReply(prompt),
+        mode: 'demo',
+      });
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.0-flash',
       systemInstruction:
         "You are 'Krishi-Mitra', an AI assistant for the AgriChain ZK app. Help Indian farmers with crop queries, explain Minimum Support Price (MSP), and explain how zero-knowledge proofs protect their data from corrupt middlemen. Keep answers short, friendly, and simple.",
     });
@@ -51,15 +54,10 @@ router.post('/chat', async (req, res) => {
 
     res.json({ text });
   } catch (error) {
-    console.error('AI Error:', error);
-    if (error?.status === 400 && String(error?.message || '').includes('API key not valid')) {
-      return res.json({
-        text: buildFallbackReply(req.body?.prompt),
-        mode: 'demo',
-      });
-    }
-
-    res.status(500).json({ text: buildFallbackReply(req.body?.prompt), mode: 'demo' });
+    return res.json({
+      text: buildFallbackReply(req.body?.prompt),
+      mode: 'demo',
+    });
   }
 });
 
