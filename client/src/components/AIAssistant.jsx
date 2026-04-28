@@ -12,6 +12,28 @@ const quickPrompts = [
   'What disease signs should I check?',
 ];
 
+const buildFallbackReply = (value = '') => {
+  const text = value.toLowerCase();
+
+  if (text.includes('zk') || text.includes('zero-knowledge') || text.includes('proof')) {
+    return 'ZK proofs hide sensitive details while still proving the data is valid. In KrishiChain, this means auditors can verify harvest integrity without exposing private farmer information.';
+  }
+
+  if (text.includes('msp') || text.includes('minimum support price')) {
+    return 'MSP is the minimum price promised by the government for selected crops. It protects farmers from selling below a fair floor price.';
+  }
+
+  if (text.includes('disease') || text.includes('pest') || text.includes('leaf')) {
+    return 'Check for spots, curling, yellowing, or holes. Share crop name and symptoms, and I can suggest likely causes and safe next steps.';
+  }
+
+  if (text.includes('price') || text.includes('market')) {
+    return 'Market price depends on crop type, quality, moisture, location, and demand. Share crop and grade for a better estimate.';
+  }
+
+  return 'I can help with crop prices, MSP, disease signs, and ZK privacy. Ask a short question and I will guide you.';
+};
+
 export default function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -64,7 +86,7 @@ export default function AIAssistant() {
         ...prev,
         {
           role: 'ai',
-          text: error.response?.data?.error || 'Sorry, I could not connect to Krishi-Mitra right now.',
+          text: error.response?.data?.error || buildFallbackReply(prompt),
         },
       ]);
     } finally {
