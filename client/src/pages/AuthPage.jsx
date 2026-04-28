@@ -73,14 +73,6 @@ export default function AuthPage() {
           <p className="hero-subtitle">The demo flow keeps authentication simple while still issuing a JWT session for backend-protected routes.</p>
         </div>
         <form className="glass-card animate-in" onSubmit={step === 'request' ? requestOtp : completeLogin} style={{ padding: 24 }}>
-          <div style={{ marginBottom: 12 }}>
-            <strong>Quick demo login:</strong>
-            <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-              {roleOptions.map((r) => (
-                <button key={r.value} type="button" className="button-secondary" onClick={() => demoLogin(r.value)}>{r.label}</button>
-              ))}
-            </div>
-          </div>
           <div className="stack">
             <div className="section-head">
               <div>
