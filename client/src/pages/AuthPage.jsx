@@ -25,7 +25,10 @@ export default function AuthPage() {
       showToast('OTP sent. Demo code is 1234.');
       setStep('verify');
     } catch (error) {
-      showToast(error.response?.data?.error || 'Failed to request OTP', 'error');
+      // Fallback to demo OTP when backend is unreachable or request fails
+      console.warn('sendOTP failed, using demo fallback OTP:', error?.message || error);
+      showToast('OTP sent (demo fallback). Demo code is 1234.');
+      setStep('verify');
     } finally {
       setLoading(false);
     }
