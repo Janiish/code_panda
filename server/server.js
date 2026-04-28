@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
+import aiRoutes from './routes/ai.js';
 import authRoutes from './routes/auth.js';
 import batchRoutes from './routes/batches.js';
 import blockchainRoutes from './routes/blockchain.js';
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/ai', aiRoutes);
 app.use('/api/batches', batchRoutes);
 app.use('/api/blockchain', blockchainRoutes);
 
