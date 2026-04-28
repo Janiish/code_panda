@@ -34,6 +34,21 @@ export default function AuthPage() {
     }
   };
 
+  const demoUsers = {
+    farmer: { id: 'demo-farmer', name: 'Demo Farmer', role: 'farmer', phone: '0000000001', location: 'Demo Village', wallet: '0xDEMO' },
+    aggregator: { id: 'demo-agg', name: 'Demo Aggregator', role: 'aggregator', phone: '0000000002', location: 'Market', wallet: '0xDEMO' },
+    retailer: { id: 'demo-ret', name: 'Demo Retailer', role: 'retailer', phone: '0000000003', location: 'Town', wallet: '0xDEMO' },
+    consumer: { id: 'demo-cons', name: 'Demo Auditor', role: 'consumer', phone: '0000000004', location: 'City', wallet: '0xDEMO' },
+  };
+
+  const demoLogin = (role) => {
+    const user = demoUsers[role] || demoUsers.farmer;
+    const token = 'demo-token-' + role;
+    login(token, user);
+    showToast(`Logged in as ${user.name}`);
+    navigate('/dashboard', { replace: true });
+  };
+
   const completeLogin = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -58,6 +73,14 @@ export default function AuthPage() {
           <p className="hero-subtitle">The demo flow keeps authentication simple while still issuing a JWT session for backend-protected routes.</p>
         </div>
         <form className="glass-card animate-in" onSubmit={step === 'request' ? requestOtp : completeLogin} style={{ padding: 24 }}>
+          <div style={{ marginBottom: 12 }}>
+            <strong>Quick demo login:</strong>
+            <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+              {roleOptions.map((r) => (
+                <button key={r.value} type="button" className="button-secondary" onClick={() => demoLogin(r.value)}>{r.label}</button>
+              ))}
+            </div>
+          </div>
           <div className="stack">
             <div className="section-head">
               <div>
