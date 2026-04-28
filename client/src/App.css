@@ -624,6 +624,56 @@
   }
 }
 
+@keyframes assistant-message-in {
+  from {
+    transform: translateY(10px) scale(0.985);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes assistant-chip-in {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes assistant-pulse {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes assistant-farmer-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-1px) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-2px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-1px) rotate(2deg);
+  }
+}
+
 .animate-in {
   animation: float-in 320ms ease-out both;
 }
