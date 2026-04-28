@@ -1,14 +1,12 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import aiRoutes from './routes/ai.js';
 import authRoutes from './routes/auth.js';
 import batchRoutes from './routes/batches.js';
 import blockchainRoutes from './routes/blockchain.js';
 import { seedDatabase } from './seed/seedData.js';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;

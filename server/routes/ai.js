@@ -2,7 +2,6 @@ import express from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const router = express.Router();
-const apiKey = process.env.GEMINI_API_KEY;
 
 const buildFallbackReply = (prompt = '') => {
   const text = prompt.toLowerCase();
@@ -34,6 +33,7 @@ router.post('/chat', async (req, res) => {
       return res.status(400).json({ error: 'Prompt is required.' });
     }
 
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return res.json({
         text: buildFallbackReply(prompt),

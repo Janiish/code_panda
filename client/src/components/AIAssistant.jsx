@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import API from '../services/api';
 
 const starterMessage = {
   role: 'ai',
@@ -57,7 +57,7 @@ export default function AIAssistant() {
     setLoading(true);
 
     try {
-      const { data } = await axios.post('/api/ai/chat', { prompt });
+      const { data } = await API.post('/ai/chat', { prompt });
       setMessages((prev) => [...prev, { role: 'ai', text: data.text || 'I could not generate a reply just now.' }]);
     } catch (error) {
       setMessages((prev) => [
