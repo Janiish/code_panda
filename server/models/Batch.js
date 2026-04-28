@@ -2,32 +2,33 @@ import mongoose from 'mongoose';
 
 const batchSchema = new mongoose.Schema({
   batchId: { type: String, required: true, unique: true },
-  crop: { type: String, required: true },
-  cropType: { type: String, default: '' },
+  cropType: { type: String, required: true },
   variety: { type: String, default: '' },
-  quantity: { type: Number, required: true },
   quantityInQuintals: { type: Number, default: 0 },
-  unit: { type: String, default: 'kg' },
-  quality: { type: String, default: 'A' },
-  moistureLevel: { type: Number, min: 0, max: 100, default: null },
+  moistureLevel: { type: Number, default: null },
+  qualityFlags: {
+    moistureBand: { type: String, enum: ['LOW', 'OK', 'HIGH'], default: 'OK' },
+    adulterationRisk: { type: String, enum: ['LOW', 'MEDIUM', 'HIGH'], default: 'LOW' }
+  },
+  featureHash: { type: String, default: '' },
+  zkProof: { type: String, default: '' },
+  syncStatus: { type: String, enum: ['PENDING_SYNC', 'ONCHAIN_CONFIRMED'], default: 'ONCHAIN_CONFIRMED' },
   farmerAadhaarId: { type: String, default: '' },
   farmerAadhaarMock: { type: String, default: '' },
   landCoordinates: {
     lat: { type: Number, default: null },
     lng: { type: Number, default: null },
-    source: { type: String, default: 'EOSDA Satellite API (Mock)' },
+    source: { type: String, default: 'EOSDA Satellite API' },
   },
   farmerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  aggregatorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
-  retailerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
   status: {
     type: String,
     enum: ['HARVESTED', 'AGGREGATED', 'IN_TRANSIT', 'AT_RETAILER', 'SOLD'],
     default: 'HARVESTED'
   },
   farmerPrice: { type: Number, required: true },
-  aggregatorPrice: { type: Number, default: null },
   retailPrice: { type: Number, default: null },
+  aggregatorPrice: { type: Number, default: null },
   harvestDate: { type: Date, default: Date.now },
   location: { type: String, default: '' },
   certifications: [String],

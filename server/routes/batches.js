@@ -64,9 +64,7 @@ router.get('/available', auth, async (req, res) => {
 router.get('/:batchId', async (req, res) => {
   try {
     const batch = await Batch.findOne({ batchId: req.params.batchId })
-      .populate('farmerId', 'name location avatar wallet crops phone')
-      .populate('aggregatorId', 'name location avatar type')
-      .populate('retailerId', 'name location avatar type');
+      .populate('farmerId', 'name location avatar wallet crops phone');
     if (!batch) return res.status(404).json({ error: 'Batch not found' });
 
     const blocks = await Block.find({ 'data.batchId': req.params.batchId }).sort({ index: 1 });
