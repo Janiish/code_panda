@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { pathToFileURL } from 'url';
 import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js';
@@ -38,3 +39,16 @@ app.use(async (req, res, next) => {
 
 // Export the app for Vercel instead of using app.listen()
 export default app;
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const PORT = process.env.PORT || 5000;
+
+  const start = async () => {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  };
+
+  start();
+}
