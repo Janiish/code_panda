@@ -1,6 +1,12 @@
 {
   "buildCommand": "npm install --prefix client && npm run build --prefix client",
   "outputDirectory": "client/dist",
+  "builds": [
+    {
+      "src": "server/server.js",
+      "use": "@vercel/node"
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -11,4 +17,4 @@
       "destination": "/index.html"
     }
   ]
-}
+} 
